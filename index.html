@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#4f3cb8" />
+  <title>Geige Musik-Quiz</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="app">
+
+    <!-- Startseite -->
+    <section id="screen-home" class="screen active">
+      <header class="hero">
+        <div class="hero-emoji">🎻</div>
+        <h1>Geige Musik-Quiz</h1>
+        <p class="subtitle">Keman Müzik Testi</p>
+      </header>
+
+      <div class="modes">
+        <button class="mode-btn" data-mode="keys">
+          <span class="mode-title">Tonarten &amp; Vorzeichen</span>
+          <span class="mode-sub">Tonlar &amp; Arızalar</span>
+        </button>
+        <button class="mode-btn" data-mode="fingerboard">
+          <span class="mode-title">Griffbrett</span>
+          <span class="mode-sub">Klavye / Parmak Pozisyonları</span>
+        </button>
+      </div>
+
+      <div class="legend">
+        <h2>Legende / Açıklama</h2>
+        <ul id="legend-list"></ul>
+      </div>
+    </section>
+
+    <!-- Quiz -->
+    <section id="screen-quiz" class="screen">
+      <div class="quiz-top">
+        <button id="btn-quit" class="link-btn" aria-label="Zurück">&larr; Menü</button>
+        <div class="progress">
+          <span id="q-counter">Frage 1/10</span>
+          <span id="q-score">0 ✓</span>
+        </div>
+      </div>
+
+      <div class="progress-bar"><div id="progress-fill"></div></div>
+
+      <div class="question-card">
+        <p id="question-mode" class="q-mode"></p>
+        <h2 id="question-text"></h2>
+        <p id="question-sub" class="q-sub"></p>
+      </div>
+
+      <div id="options" class="options"></div>
+
+      <div id="feedback" class="feedback" hidden>
+        <p id="feedback-text"></p>
+        <button id="btn-next" class="primary-btn">Weiter &rarr;</button>
+      </div>
+    </section>
+
+    <!-- Ergebnis -->
+    <section id="screen-result" class="screen">
+      <div class="result-card">
+        <div id="result-emoji" class="result-emoji">🎉</div>
+        <h2 id="result-score">7/10</h2>
+        <p id="result-msg" class="result-msg"></p>
+        <button id="btn-retry" class="primary-btn">Nochmal</button>
+        <button id="btn-home" class="secondary-btn">Hauptmenü</button>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
