@@ -2,7 +2,7 @@
 (function () {
   "use strict";
 
-  const QUESTIONS_PER_ROUND = 10;
+  const QUESTIONS_PER_ROUND = 20;
   const OPTION_COUNT = 4;
 
   // ---------- Hilfsfunktionen ----------
@@ -131,6 +131,8 @@
 
   // ---------- Spielzustand ----------
   const state = { mode: null, questions: [], index: 0, score: 0, answered: false };
+  // Session-Gesamtwertung über mehrere Runden (bleibt bis zum Neuladen / Zurücksetzen).
+  const session = { correct: 0, answered: 0, rounds: 0 };
 
   // ---------- DOM ----------
   const el = (id) => document.getElementById(id);
@@ -143,7 +145,20 @@
   function showScreen(name) {
     Object.values(screens).forEach((s) => s.classList.remove("active"));
     screens[name].classList.add("active");
+    if (name === "home") updateSessionSummary();
     window.scrollTo(0, 0);
+  }
+
+  function updateSessionSummary() {
+    const box = el("session-summary");
+    if (session.rounds === 0) {
+      box.hidden = true;
+      return;
+    }
+    box.hidden = false;
+    el("session-summary-text").textContent =
+      "Session: " + session.correct + "/" + session.answered +
+      " richtig · " + session.rounds + (session.rounds === 1 ? " Runde" : " Runden");
   }
 
   // ---------- Rendern ----------
@@ -228,6 +243,11 @@
     const score = state.score;
     el("result-score").textContent = score + "/" + total;
 
+    // Runde in die Session-Gesamtwertung übernehmen.
+    session.correct += score;
+    session.answered += total;
+    session.rounds += 1;
+
     const pct = score / total;
     let emoji, msg;
     if (pct === 1) { emoji = "🏆"; msg = "Perfekt! Alles richtig! / Mükemmel!"; }
@@ -237,7 +257,17 @@
 
     el("result-emoji").textContent = emoji;
     el("result-msg").textContent = msg;
+    el("result-session").textContent =
+      "Session gesamt: " + session.correct + "/" + session.answered +
+      " (" + session.rounds + (session.rounds === 1 ? " Runde" : " Runden") + ")";
     showScreen("result");
+  }
+
+  function resetSession() {
+    session.correct = 0;
+    session.answered = 0;
+    session.rounds = 0;
+    updateSessionSummary();
   }
 
   function startRound(mode) {
@@ -261,6 +291,7 @@
     el("btn-quit").addEventListener("click", () => showScreen("home"));
     el("btn-home").addEventListener("click", () => showScreen("home"));
     el("btn-retry").addEventListener("click", () => startRound(state.mode));
+    el("btn-reset-session").addEventListener("click", resetSession);
   }
 
   document.addEventListener("DOMContentLoaded", init);

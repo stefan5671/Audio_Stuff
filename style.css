@@ -44,6 +44,15 @@ body {
 .hero h1 { font-size: 30px; margin-top: 10px; letter-spacing: -.5px; }
 .subtitle { color: var(--muted); margin-top: 4px; font-size: 15px; }
 
+/* Session summary (home) */
+.session-summary {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  background: var(--card); border: 1px solid var(--card-2);
+  border-radius: 12px; padding: 12px 16px; margin-bottom: 16px;
+}
+#session-summary-text { font-size: 15px; font-weight: 600; color: var(--text); }
+.session-summary .link-btn { color: var(--accent); font-size: 14px; }
+
 /* Mode buttons */
 .modes { display: flex; flex-direction: column; gap: 14px; }
 .mode-btn {
@@ -122,4 +131,5 @@ body {
 .result-card { background: var(--card); border-radius: 22px; padding: 40px 26px; text-align: center; }
 .result-emoji { font-size: 64px; }
 #result-score { font-size: 44px; margin: 10px 0 6px; }
-.result-msg { color: var(--muted); font-size: 16px; margin-bottom: 26px; }
+.result-msg { color: var(--muted); font-size: 16px; margin-bottom: 10px; }
+.result-session { color: var(--accent); font-size: 15px; font-weight: 600; margin-bottom: 26px; }
