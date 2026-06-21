@@ -61,7 +61,7 @@
         mode: "Tonarten & Vorzeichen",
         text: "Wie viele Vorzeichen hat " + k.key + "?",
         sub: k.tr,
-        answer: countLabel(k),
+        answers: [countLabel(k)],
         options: buildOptions(countLabel(k), countPool)
       });
 
@@ -70,7 +70,7 @@
         mode: "Tonarten & Vorzeichen",
         text: "Welche Vorzeichen hat " + k.key + "?",
         sub: k.tr,
-        answer: accidentalLabel(k),
+        answers: [accidentalLabel(k)],
         options: buildOptions(accidentalLabel(k), accPool)
       });
 
@@ -80,7 +80,7 @@
           mode: "Tonarten & Vorzeichen",
           text: "Welche Tonart hat " + countLabel(k) + "?",
           sub: "Tonart bestimmen",
-          answer: k.key,
+          answers: [k.key],
           options: buildOptions(k.key, keyPool)
         });
       }
@@ -91,26 +91,36 @@
 
   function makeFingerboardQuestions() {
     const qs = [];
-    const notePool = FINGERBOARD.map((p) => p.note);
-    const posPool = FINGERBOARD.map(positionLabel);
+    // Eindeutige Tonauswahl für Vorwärts-Fragen (Position ist eindeutig durch Saite+Finger+tief/hoch).
+    const notePool = [...new Set(FINGERBOARD.map((p) => noteWithTr(p.note)))];
 
     FINGERBOARD.forEach((p) => {
-      // Welcher Ton?
+      // Welcher Ton? — eindeutig, da die Position Saite, Finger und tief/hoch festlegt.
       qs.push({
         mode: "Griffbrett",
         text: positionLabel(p) + " — welcher Ton?",
         sub: "Ton benennen",
-        answer: noteWithTr(p.note),
-        options: buildOptions(noteWithTr(p.note), notePool.map(noteWithTr))
+        answers: [noteWithTr(p.note)],
+        options: buildOptions(noteWithTr(p.note), notePool)
       });
+    });
 
-      // Umgekehrt: Wo spielst du den Ton?
+    // Umgekehrt: Wo spielst du den Ton? — pro Ton EINE Frage, jede gültige Position zählt.
+    const notes = [...new Set(FINGERBOARD.map((p) => p.note))];
+    notes.forEach((note) => {
+      const valid = FINGERBOARD.filter((r) => r.note === note).map(positionLabel);
+      const invalid = FINGERBOARD.filter((r) => r.note !== note).map(positionLabel);
+
+      // Bis zu 2 gültige Positionen anzeigen, Rest mit garantiert falschen Griffen auffüllen.
+      const shownValid = shuffle(valid).slice(0, Math.min(2, valid.length));
+      const distractors = pickDistractors(invalid, null, OPTION_COUNT - shownValid.length);
+
       qs.push({
         mode: "Griffbrett",
-        text: "Wo spielst du " + noteWithTr(p.note) + "?",
-        sub: "Position finden",
-        answer: positionLabel(p),
-        options: buildOptions(positionLabel(p), posPool)
+        text: "Wo spielst du " + noteWithTr(note) + "?",
+        sub: valid.length > 1 ? "Position finden (mehrere möglich)" : "Position finden",
+        answers: shownValid,
+        options: shuffle([...shownValid, ...distractors])
       });
     });
 
@@ -170,7 +180,7 @@
       const b = document.createElement("button");
       b.className = "option";
       b.textContent = opt;
-      b.addEventListener("click", () => onAnswer(b, opt, q.answer));
+      b.addEventListener("click", () => onAnswer(b, opt, q.answers));
       opts.appendChild(b);
     });
 
@@ -179,25 +189,25 @@
     el("feedback-text").className = "";
   }
 
-  function onAnswer(button, chosen, correct) {
+  function onAnswer(button, chosen, answers) {
     if (state.answered) return;
     state.answered = true;
 
     const buttons = el("options").querySelectorAll(".option");
     buttons.forEach((b) => {
       b.disabled = true;
-      if (b.textContent === correct) b.classList.add("correct");
+      if (answers.includes(b.textContent)) b.classList.add("correct");
     });
 
     const fbText = el("feedback-text");
-    if (chosen === correct) {
+    if (answers.includes(chosen)) {
       state.score++;
       button.classList.add("correct");
       fbText.textContent = "Richtig! 🎵";
       fbText.className = "good";
     } else {
       button.classList.add("wrong");
-      fbText.textContent = "Falsch — richtig ist: " + correct;
+      fbText.textContent = "Falsch — richtig ist: " + answers.join(" oder ");
       fbText.className = "bad";
     }
 
