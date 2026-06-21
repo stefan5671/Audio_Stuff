@@ -66,6 +66,23 @@ const FINGERBOARD = [
   { string: "E", finger: 4, qualifier: null,   note: "H" }
 ];
 
+// Mode 3 — Gehörbildung (Ton hören & benennen)
+// midi: MIDI-Notennummer in Oktave 4 (A4 = 69 = 440 Hz). App spielt zusätzlich Oktave 5.
+const TONE_NAMES = [
+  { note: "C",   midi: 60 },
+  { note: "Cis", midi: 61 },
+  { note: "D",   midi: 62 },
+  { note: "Dis", midi: 63 },
+  { note: "E",   midi: 64 },
+  { note: "F",   midi: 65 },
+  { note: "Fis", midi: 66 },
+  { note: "G",   midi: 67 },
+  { note: "Gis", midi: 68 },
+  { note: "A",   midi: 69 },
+  { note: "B",   midi: 70 },
+  { note: "H",   midi: 71 }
+];
+
 // Legende für die Startseite
 const LEGEND = [
   "b = tiefer (-es), z. B. B = Bb",

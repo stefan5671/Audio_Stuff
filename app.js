@@ -5,6 +5,36 @@
   const QUESTIONS_PER_ROUND = 20;
   const OPTION_COUNT = 4;
 
+  // ---------- Audio (Web Audio API) ----------
+  let audioCtx = null;
+
+  function playFreq(freq) {
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      if (!audioCtx) audioCtx = new AC();
+      if (audioCtx.state === "suspended") audioCtx.resume();
+
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+
+      osc.type = "triangle"; // wärmer als Sinus, geigenähnlicher
+      osc.frequency.value = freq;
+
+      // Lautstärke-Hüllkurve (Attack/Decay), damit es nicht klickt.
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.3, now + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.3);
+
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 1.35);
+    } catch (e) {
+      /* Audio nicht verfügbar – Modus bleibt trotzdem spielbar über Replay-Versuche. */
+    }
+  }
+
   // ---------- Hilfsfunktionen ----------
   function shuffle(arr) {
     const a = arr.slice();
@@ -124,8 +154,33 @@
     return qs;
   }
 
+  function makeEarQuestions() {
+    const qs = [];
+    const namePool = [...new Set(TONE_NAMES.map((t) => noteWithTr(t.note)))];
+    const octaves = [0, 12]; // Oktave 4 und 5 -> mehr Fragen und Abwechslung
+
+    TONE_NAMES.forEach((t) => {
+      octaves.forEach((o) => {
+        const midi = t.midi + o;
+        qs.push({
+          mode: "Gehörbildung",
+          text: "Welcher Ton erklingt?",
+          sub: "Ton anhören und Namen wählen",
+          answers: [noteWithTr(t.note)],
+          options: buildOptions(noteWithTr(t.note), namePool),
+          freq: 440 * Math.pow(2, (midi - 69) / 12)
+        });
+      });
+    });
+
+    return qs;
+  }
+
   function buildRound(mode) {
-    const all = mode === "keys" ? makeKeyQuestions() : makeFingerboardQuestions();
+    let all;
+    if (mode === "keys") all = makeKeyQuestions();
+    else if (mode === "ear") all = makeEarQuestions();
+    else all = makeFingerboardQuestions();
     return shuffle(all).slice(0, QUESTIONS_PER_ROUND);
   }
 
@@ -185,6 +240,17 @@
     el("question-mode").textContent = q.mode;
     el("question-text").textContent = q.text;
     el("question-sub").textContent = q.sub || "";
+
+    // Audio-Fragen (Gehörbildung): Replay-Button zeigen und Ton einmal abspielen.
+    const replay = el("btn-replay");
+    if (q.freq) {
+      replay.hidden = false;
+      replay.onclick = () => playFreq(q.freq);
+      playFreq(q.freq);
+    } else {
+      replay.hidden = true;
+      replay.onclick = null;
+    }
 
     const opts = el("options");
     opts.innerHTML = "";

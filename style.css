@@ -90,6 +90,16 @@ body {
 #question-text { font-size: 24px; line-height: 1.3; }
 .q-sub { color: var(--muted); margin-top: 8px; font-size: 14px; }
 
+.replay-btn {
+  margin-top: 18px;
+  padding: 14px 26px;
+  font-size: 17px; font-weight: 700;
+  border: none; border-radius: 99px; cursor: pointer;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff;
+  box-shadow: 0 6px 18px rgba(124,108,255,.3);
+}
+.replay-btn:active { transform: scale(.97); }
+
 /* Options */
 .options { display: flex; flex-direction: column; gap: 12px; }
 .option {
