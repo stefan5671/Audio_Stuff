@@ -38,9 +38,16 @@
   }
 
   function positionLabel(p) {
+    if (p.finger === 0) return "leere " + p.string + "-Saite";
     let s = p.string + "-Saite, " + p.finger + ". Finger";
     if (p.qualifier) s += " (" + p.qualifier + ")";
     return s;
+  }
+
+  // Nur der Finger-Teil (Saite ist in der Frage vorgegeben) -> als Antwortoption.
+  function fingerLabel(p) {
+    if (p.finger === 0) return "leere Saite (0)";
+    return p.finger + ". Finger" + (p.qualifier ? " (" + p.qualifier + ")" : "");
   }
 
   function noteWithTr(note) {
@@ -91,11 +98,11 @@
 
   function makeFingerboardQuestions() {
     const qs = [];
-    // Eindeutige Tonauswahl für Vorwärts-Fragen (Position ist eindeutig durch Saite+Finger+tief/hoch).
     const notePool = [...new Set(FINGERBOARD.map((p) => noteWithTr(p.note)))];
+    const fingerPool = [...new Set(FINGERBOARD.map(fingerLabel))];
 
     FINGERBOARD.forEach((p) => {
-      // Welcher Ton? — eindeutig, da die Position Saite, Finger und tief/hoch festlegt.
+      // Vorwärts: Position -> Ton. Eindeutig, da Saite + Finger + tief/hoch die Position festlegen.
       qs.push({
         mode: "Griffbrett",
         text: positionLabel(p) + " — welcher Ton?",
@@ -103,24 +110,14 @@
         answers: [noteWithTr(p.note)],
         options: buildOptions(noteWithTr(p.note), notePool)
       });
-    });
 
-    // Umgekehrt: Wo spielst du den Ton? — pro Ton EINE Frage, jede gültige Position zählt.
-    const notes = [...new Set(FINGERBOARD.map((p) => p.note))];
-    notes.forEach((note) => {
-      const valid = FINGERBOARD.filter((r) => r.note === note).map(positionLabel);
-      const invalid = FINGERBOARD.filter((r) => r.note !== note).map(positionLabel);
-
-      // Bis zu 2 gültige Positionen anzeigen, Rest mit garantiert falschen Griffen auffüllen.
-      const shownValid = shuffle(valid).slice(0, Math.min(2, valid.length));
-      const distractors = pickDistractors(invalid, null, OPTION_COUNT - shownValid.length);
-
+      // Rückwärts: Ton + Saite -> Finger. Eindeutig, da jeder Ton pro Saite nur einmal vorkommt.
       qs.push({
         mode: "Griffbrett",
-        text: "Wo spielst du " + noteWithTr(note) + "?",
-        sub: valid.length > 1 ? "Position finden (mehrere möglich)" : "Position finden",
-        answers: shownValid,
-        options: shuffle([...shownValid, ...distractors])
+        text: "Welcher Finger spielt " + noteWithTr(p.note) + " auf der " + p.string + "-Saite?",
+        sub: "Finger finden",
+        answers: [fingerLabel(p)],
+        options: buildOptions(fingerLabel(p), fingerPool)
       });
     });
 
