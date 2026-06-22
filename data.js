@@ -31,30 +31,32 @@ const KEYS = [
 
 // Mode 2 — Griffbrett (Fingerboard), 1. Lage
 // string: Saite, finger: Fingernummer, qualifier: "tief"/"hoch"/null, note: deutscher Ton
+// Jeder gegriffene Ton trägt hoch/tief (Ganzton zur Nachbarlage = hoch, Halbton = tief),
+// damit Frage UND Antwort eindeutig sind. Nur die leere Saite (Finger 0) hat keinen Zusatz.
 const FINGERBOARD = [
   // G-Saite: G A H/B C D
   { string: "G", finger: 0, qualifier: null,   note: "G" },
-  { string: "G", finger: 1, qualifier: null,   note: "A" },
+  { string: "G", finger: 1, qualifier: "hoch", note: "A" },
   { string: "G", finger: 2, qualifier: "tief", note: "B" },
   { string: "G", finger: 2, qualifier: "hoch", note: "H" },
-  { string: "G", finger: 3, qualifier: null,   note: "C" },
-  { string: "G", finger: 4, qualifier: null,   note: "D" },
+  { string: "G", finger: 3, qualifier: "tief", note: "C" },
+  { string: "G", finger: 4, qualifier: "tief", note: "D" },
 
   // D-Saite: D E F/Fis G A
   { string: "D", finger: 0, qualifier: null,   note: "D" },
-  { string: "D", finger: 1, qualifier: null,   note: "E" },
+  { string: "D", finger: 1, qualifier: "hoch", note: "E" },
   { string: "D", finger: 2, qualifier: "tief", note: "F" },
   { string: "D", finger: 2, qualifier: "hoch", note: "Fis" },
-  { string: "D", finger: 3, qualifier: null,   note: "G" },
-  { string: "D", finger: 4, qualifier: null,   note: "A" },
+  { string: "D", finger: 3, qualifier: "tief", note: "G" },
+  { string: "D", finger: 4, qualifier: "tief", note: "A" },
 
   // A-Saite: A H C/Cis D E
   { string: "A", finger: 0, qualifier: null,   note: "A" },
-  { string: "A", finger: 1, qualifier: null,   note: "H" },
+  { string: "A", finger: 1, qualifier: "hoch", note: "H" },
   { string: "A", finger: 2, qualifier: "tief", note: "C" },
   { string: "A", finger: 2, qualifier: "hoch", note: "Cis" },
-  { string: "A", finger: 3, qualifier: null,   note: "D" },
-  { string: "A", finger: 4, qualifier: null,   note: "E" },
+  { string: "A", finger: 3, qualifier: "tief", note: "D" },
+  { string: "A", finger: 4, qualifier: "tief", note: "E" },
 
   // E-Saite: E F/Fis G/Gis A H
   { string: "E", finger: 0, qualifier: null,   note: "E" },
@@ -62,8 +64,8 @@ const FINGERBOARD = [
   { string: "E", finger: 1, qualifier: "hoch", note: "Fis" },
   { string: "E", finger: 2, qualifier: "tief", note: "G" },
   { string: "E", finger: 2, qualifier: "hoch", note: "Gis" },
-  { string: "E", finger: 3, qualifier: null,   note: "A" },
-  { string: "E", finger: 4, qualifier: null,   note: "H" }
+  { string: "E", finger: 3, qualifier: "tief", note: "A" },
+  { string: "E", finger: 4, qualifier: "tief", note: "H" }
 ];
 
 // Mode 3 — Gehörbildung (Ton hören & benennen)
