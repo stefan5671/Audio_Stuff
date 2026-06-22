@@ -345,9 +345,74 @@
     showScreen("quiz");
   }
 
+  // ---------- PIN-Sperre ----------
+  // Hinweis: rein clientseitig – schützt nur vor Gelegenheitszugriff, keine echte Sicherheit.
+  const PIN = "0203";
+  let pinEntry = "";
+
+  function isUnlocked() {
+    try { return sessionStorage.getItem("quizUnlocked") === "1"; } catch (e) { return false; }
+  }
+
+  function renderPinDots() {
+    const dots = el("pin-dots").children;
+    for (let i = 0; i < dots.length; i++) {
+      dots[i].classList.toggle("filled", i < pinEntry.length);
+    }
+  }
+
+  function unlock() {
+    try { sessionStorage.setItem("quizUnlocked", "1"); } catch (e) { /* egal */ }
+    el("screen-lock").classList.remove("active");
+    showScreen("home");
+  }
+
+  function pinFailed() {
+    const dots = el("pin-dots");
+    el("pin-error").hidden = false;
+    dots.classList.add("shake");
+    setTimeout(() => {
+      pinEntry = "";
+      renderPinDots();
+      dots.classList.remove("shake");
+    }, 450);
+  }
+
+  function handlePinKey(k) {
+    if (k === "del") {
+      pinEntry = pinEntry.slice(0, -1);
+      el("pin-error").hidden = true;
+      renderPinDots();
+      return;
+    }
+    if (pinEntry.length >= 4) return;
+    el("pin-error").hidden = true;
+    pinEntry += k;
+    renderPinDots();
+    if (pinEntry.length === 4) {
+      if (pinEntry === PIN) unlock();
+      else pinFailed();
+    }
+  }
+
+  function initLock() {
+    el("pin-dots") && document.querySelectorAll(".keypad .key[data-key]").forEach((btn) => {
+      btn.addEventListener("click", () => handlePinKey(btn.dataset.key));
+    });
+    // Physische Tastatur (Desktop): Ziffern und Backspace.
+    document.addEventListener("keydown", (e) => {
+      if (!el("screen-lock").classList.contains("active")) return;
+      if (e.key >= "0" && e.key <= "9") handlePinKey(e.key);
+      else if (e.key === "Backspace") handlePinKey("del");
+    });
+
+    if (isUnlocked()) unlock();
+  }
+
   // ---------- Events ----------
   function init() {
     renderLegend();
+    initLock();
 
     document.querySelectorAll(".mode-btn").forEach((btn) => {
       btn.addEventListener("click", () => startRound(btn.dataset.mode));

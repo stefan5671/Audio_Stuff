@@ -10,8 +10,35 @@
 <body>
   <main class="app">
 
+    <!-- PIN-Sperre -->
+    <section id="screen-lock" class="screen active">
+      <div class="lock-card">
+        <div class="lock-emoji">🔒</div>
+        <h1>Gesperrt</h1>
+        <p class="subtitle">PIN eingeben · PIN girin</p>
+        <div id="pin-dots" class="pin-dots">
+          <span></span><span></span><span></span><span></span>
+        </div>
+        <p id="pin-error" class="pin-error" hidden>Falsche PIN · Yanlış PIN</p>
+        <div class="keypad">
+          <button class="key" data-key="1">1</button>
+          <button class="key" data-key="2">2</button>
+          <button class="key" data-key="3">3</button>
+          <button class="key" data-key="4">4</button>
+          <button class="key" data-key="5">5</button>
+          <button class="key" data-key="6">6</button>
+          <button class="key" data-key="7">7</button>
+          <button class="key" data-key="8">8</button>
+          <button class="key" data-key="9">9</button>
+          <span class="key key-spacer" aria-hidden="true"></span>
+          <button class="key" data-key="0">0</button>
+          <button class="key key-del" data-key="del" aria-label="Löschen">⌫</button>
+        </div>
+      </div>
+    </section>
+
     <!-- Startseite -->
-    <section id="screen-home" class="screen active">
+    <section id="screen-home" class="screen">
       <header class="hero">
         <div class="hero-emoji">🎻</div>
         <h1>Geige Musik-Quiz</h1>
